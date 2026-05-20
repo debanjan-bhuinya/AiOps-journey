@@ -1,7 +1,7 @@
 import google.generativeai as genai
 import os
-# 1. Import BOTH git tools
-from agent_tools import get_git_status, commit_changes 
+# Import all 5 tools now
+from agent_tools import get_git_status, get_git_diff, stage_changes, commit_changes, pull_changes, push_changes
 
 api_key = os.environ.get("GEMINI_API_KEY")
 if not api_key:
@@ -10,25 +10,29 @@ if not api_key:
 
 genai.configure(api_key=api_key)
 
-# 2. Give the AI an array of multiple tools
+# Bind ALL tools to the model
 model = genai.GenerativeModel(
     model_name='gemini-2.5-flash',
-    tools=[get_git_status, commit_changes]  
+    tools=[get_git_status, get_git_diff, stage_changes, commit_changes, pull_changes, push_changes]  
 )
 
-print("Agent is checking status and writing your commit...")
+print("Agent is performing a resilient sync...")
 
 chat = model.start_chat(enable_automatic_function_calling=True)
 
-# 3. A Multi-Step Prompt
+# The Advanced, Self-Correcting Prompt
 user_prompt = """
-1. Check my local git status.
-2. If there are files ready to be committed, write a professional, concise commit message summarizing the changes.
-3. Use the commit tool to actually commit the files with that message.
-4. Tell me what you did.
+You are a senior DevOps automation agent. Execute the following sequence to safely sync this repository:
+
+1. READ: Use the status tool to see what files changed. If there are changes, use the diff tool to read the EXACT lines of code that were modified.
+2. STAGE: Use the stage tool to add all changes.
+3. SYNC: Use the pull tool to fetch any remote changes and prevent merge conflicts BEFORE you commit.
+4. COMMIT: Using the context you learned from the diff tool, write a highly descriptive, conventional commit message and commit the files. (If there are no changes, skip this).
+5. PUSH: Push the changes to the remote repository.
+6. REPORT: Give me a final summary of the code you analyzed and the actions you took.
 """
 
 response = chat.send_message(user_prompt)
 
-print("\n--- Agent's Final Report ---")
+print("\n--- Agent's Resilient Report ---")
 print(response.text)
