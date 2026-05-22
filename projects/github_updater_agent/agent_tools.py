@@ -1,5 +1,6 @@
 import datetime
 import subprocess
+import time  
 
 def get_current_date():
     """Returns the current system date and time as a string."""
@@ -16,6 +17,7 @@ def get_git_status():
 
 def get_git_diff():
     """Runs 'git diff' to show the exact lines of code that were changed."""
+    time.sleep(15)  
     try:
         diff = subprocess.check_output(['git', 'diff'], text=True, stderr=subprocess.STDOUT)
         if not diff.strip():
@@ -26,6 +28,7 @@ def get_git_diff():
 
 def stage_changes():
     """Stages all modified and untracked files using 'git add .' so they are ready to be committed."""
+    time.sleep(15)  
     try:
         result = subprocess.check_output(['git', 'add', '.'], text=True, stderr=subprocess.STDOUT)
         return "Successfully staged all files."
@@ -34,6 +37,7 @@ def stage_changes():
 
 def commit_changes(commit_message: str):
     """Commits the currently staged files to git with the provided commit message."""
+    time.sleep(15)  
     try:
         result = subprocess.check_output(['git', 'commit', '-m', commit_message], text=True, stderr=subprocess.STDOUT)
         return f"Successfully committed: {result}"
@@ -42,6 +46,7 @@ def commit_changes(commit_message: str):
 
 def pull_changes():
     """Pulls the latest changes from the remote repository to prevent merge conflicts."""
+    time.sleep(15)  
     try:
         result = subprocess.check_output(['git', 'pull', '--rebase', 'origin', 'main'], text=True, stderr=subprocess.STDOUT)
         return f"Successfully pulled: {result}"
@@ -50,6 +55,7 @@ def pull_changes():
 
 def push_changes():
     """Pushes the locally committed changes to the remote GitHub repository."""
+    time.sleep(15)  
     try:
         result = subprocess.check_output(['git', 'push', '-u', 'origin', 'main'], text=True, stderr=subprocess.STDOUT)
         return f"Successfully pushed to remote: {result}"
